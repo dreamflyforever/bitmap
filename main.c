@@ -32,17 +32,6 @@ void bitmap_set(int prio)
 	y = y | 1 << b;
 }
 
-/*TODO: when y is the some, it cant just clear the y*/
-void bitmap_clear(int prio)
-{
-	unsigned char a, b;
-	a = prio & 0x7;
-	b = prio >> 3;
-	c[b] &= ~(1 << a);
-	y = y & ~(1 << b);
-
-}
-
 int bitmap_get()
 {
 	unsigned char a, b, prio;
@@ -52,13 +41,23 @@ int bitmap_get()
 	return prio;
 }
 
+void bitmap_clear(int prio)
+{
+	unsigned char a, b;
+	a = prio & 0x7;
+	b = prio >> 3;
+	c[b] &= ~(1 << a);
+	if (c[b] == 0)
+		y = y & ~(1 << b);
+}
+
 int main()
 {
 	int prio = 11;
 	bitmap_set(prio);
-	bitmap_set(7);
 	bitmap_set(1);
-	bitmap_set(20);
+	bitmap_clear(1);
+	bitmap_set(2);
 	prio = bitmap_get();
 	printf("prio: %d\n", prio);
 	return 0;
