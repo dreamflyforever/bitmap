@@ -20,38 +20,45 @@ unsigned int  const  bitmap[256] = {
 	4u, 0u, 1u, 0u, 2u, 0u, 1u, 0u, 3u, 0u, 1u, 0u, 2u, 0u, 1u, 0u  /* 0xF0 to 0xFF */
 };
 
-static int x, y;
+static unsigned char x, y;
+static unsigned char c[8] = {0};
 
 void bitmap_set(int prio)
 {
-	x = x | (1 << (prio & 0x7));
-	y = y | (1 << (prio >> 3));
+	unsigned char a, b;
+	a = prio & 0x7;
+	b = prio >> 3;
+	c[b] |= 1 << a;
+	y = y | 1 << b;
 }
 
 /*TODO: when y is the some, it cant just clear the y*/
 void bitmap_clear(int prio)
 {
-	
-	x = x & (~(1 << (prio & 0x7)));
-	y = y & (~(1 << (prio >> 3)));
+	unsigned char a, b;
+	a = prio & 0x7;
+	b = prio >> 3;
+	c[b] &= ~(1 << a);
+	y = y & ~(1 << b);
+
 }
 
 int bitmap_get()
 {
-	int a, b, prio;
-	a = bitmap[x];
+	unsigned char a, b, prio;
 	b = bitmap[y];
-	prio = a + b*8;
+	a = bitmap[c[b]];
+	prio = b*8 + a;
 	return prio;
 }
 
 int main()
 {
-	int prio = 8;
+	int prio = 11;
 	bitmap_set(prio);
-	bitmap_set(10);
-	//bitmap_set(20);
-	bitmap_clear(8);
+	bitmap_set(7);
+	bitmap_set(1);
+	bitmap_set(20);
 	prio = bitmap_get();
 	printf("prio: %d\n", prio);
 	return 0;
